@@ -589,7 +589,7 @@ Route::get('/jobs/{id}/edit', JobForm::class)->name('admin.jobs.edit');
 ---
 
 ## FEATURE 5 — Gerenciamento de Clientes no Trabalho (ClientManager)
-
+##
 ### Objetivo
 Componente Livewire dentro da tela de trabalho. Busca por telefone, auto-preenche nome, adiciona cliente, gera token, exibe link copiável. Corresponde à Tela 6 do `FRONTEND-SPEC.md`.
 
