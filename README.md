@@ -133,11 +133,6 @@ php artisan test
 | Livewire | `app/Livewire/Admin/` | Componentes reativos: JobList, JobForm, ClientManager, PhotoUploader, ClientList |
 | Database | `database/` | Migrations (tabelas PT-BR), seeders |
 
-## Público alvo
-
-- **Admin (fotógrafa):** mulher 55+ anos, interface intuitiva, botões grandes, sem jargão
-- **Clientes:** adultos/idosos 40-70+, acessam pelo celular, galeria simples e bonita
-
 ## Licença
 
 Projeto privado — uso exclusivo Silvia Souza Fotografa.
