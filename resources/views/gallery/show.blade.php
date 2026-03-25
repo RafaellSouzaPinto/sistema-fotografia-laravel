@@ -68,7 +68,16 @@
     <div x-data="{
         aberto: false,
         fotoAtual: 0,
-        fotos: {{ $fotos->map(fn($f) => ['thumb' => $f->drive_thumbnail ?? asset('storage/'.$f->drive_arquivo_id), 'id' => $f->id, 'nome' => $f->nome_arquivo])->toJson() }},
+        fotos: {{ $fotos->map(fn($f) => [
+            'thumb' => str_starts_with($f->drive_arquivo_id, 'fotos/')
+                ? asset('storage/' . ($f->caminho_thumbnail ?? $f->drive_arquivo_id))
+                : ($f->drive_thumbnail ?? ''),
+            'full' => str_starts_with($f->drive_arquivo_id, 'fotos/')
+                ? asset('storage/' . $f->drive_arquivo_id)
+                : preg_replace('/=s\d+$/', '=s2000', $f->drive_thumbnail ?? ''),
+            'id' => $f->id,
+            'nome' => $f->nome_arquivo
+        ])->toJson() }},
         abrirFoto(index) { this.fotoAtual = index; this.aberto = true; },
         anterior() { if (this.fotoAtual > 0) this.fotoAtual--; },
         proximo() { if (this.fotoAtual < this.fotos.length - 1) this.fotoAtual++; },
@@ -110,7 +119,7 @@
             </button>
             
             <!-- Imagem -->
-            <img :src="fotos[fotoAtual]?.thumb" :alt="fotos[fotoAtual]?.nome" class="lightbox-img">
+            <img :src="fotos[fotoAtual]?.full" :alt="fotos[fotoAtual]?.nome" class="lightbox-img">
             
             <!-- Seta Direita -->
             <button class="lightbox-arrow lightbox-arrow-right" @click="proximo()" x-show="fotoAtual < fotos.length - 1">
@@ -135,6 +144,11 @@
                     <div class="foto-wrapper" @click="abrirFoto({{ $loop->index }})">
                         @if($foto->drive_thumbnail && str_starts_with($foto->drive_thumbnail, 'http'))
                             <img src="{{ $foto->drive_thumbnail }}"
+                                 alt="{{ $foto->nome_arquivo }}"
+                                 class="foto-thumb"
+                                 loading="lazy">
+                        @elseif($foto->caminho_thumbnail)
+                            <img src="{{ asset('storage/' . $foto->caminho_thumbnail) }}"
                                  alt="{{ $foto->nome_arquivo }}"
                                  class="foto-thumb"
                                  loading="lazy">

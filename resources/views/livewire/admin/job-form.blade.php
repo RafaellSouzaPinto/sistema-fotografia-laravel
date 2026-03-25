@@ -63,13 +63,20 @@
 
         <!-- Seção 4: Publicar -->
         @if($trabalho && $trabalho->fotos_count > 0 && $trabalho->clientes_count > 0)
-            <div class="card-rosa mt-4">
+            <div class="card-rosa mt-4"
+                 x-data="{ uploadAtivo: false }"
+                 @foto-upload-iniciado.window="uploadAtivo = true"
+                 @foto-upload-concluido.window="uploadAtivo = false">
                 @if($statusAtual === 'publicado')
                     <button class="btn-publicar btn-publicado" disabled>
                         ✓ Trabalho publicado
                     </button>
                 @else
-                    <button wire:click="publicar" class="btn-publicar">
+                    <button wire:click="publicar"
+                            class="btn-publicar"
+                            :disabled="uploadAtivo"
+                            :class="uploadAtivo ? 'opacity-50' : ''"
+                            :title="uploadAtivo ? 'Aguarde o envio das fotos terminar' : ''">
                         Publicar trabalho e liberar links
                     </button>
                 @endif

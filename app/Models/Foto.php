@@ -11,7 +11,10 @@ class Foto extends Model
 
     protected $table = 'fotos';
 
-    protected $fillable = ['trabalho_id', 'nome_arquivo', 'drive_arquivo_id', 'drive_thumbnail', 'tamanho_bytes', 'ordem'];
+    protected $fillable = [
+        'trabalho_id', 'nome_arquivo', 'drive_arquivo_id',
+        'drive_thumbnail', 'caminho_thumbnail', 'tamanho_bytes', 'ordem'
+    ];
 
     public function trabalho()
     {

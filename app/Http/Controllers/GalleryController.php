@@ -45,7 +45,7 @@ class GalleryController extends Controller
 
         // Arquivo local
         if (str_starts_with($foto->drive_arquivo_id, 'fotos/')) {
-            $path = storage_path('app/public/' . $foto->drive_arquivo_id);
+            $path = \Storage::disk('public')->path($foto->drive_arquivo_id);
             if (!file_exists($path)) abort(404);
             return response()->download($path, $foto->nome_arquivo);
         }

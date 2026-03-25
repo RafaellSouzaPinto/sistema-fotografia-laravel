@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "google/apiclient": "^2.15",
+        "intervention/image": "^3.0",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.0",
