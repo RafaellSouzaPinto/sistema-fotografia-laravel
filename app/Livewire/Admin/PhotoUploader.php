@@ -138,6 +138,7 @@ class PhotoUploader extends Component
 
         // Sempre despacha o evento — Alpine.js usa para controlar o progresso
         $this->dispatch('loteProcessado', processadas: $processadas, falhas: $falhas);
+        $this->dispatch('trabalhoAtualizado');
     }
 
     #[Computed]
@@ -188,6 +189,7 @@ class PhotoUploader extends Component
 
         $foto->delete();
         $this->dispatch('notify', message: 'Foto removida.');
+        $this->dispatch('trabalhoAtualizado');
     }
 
     public function render()

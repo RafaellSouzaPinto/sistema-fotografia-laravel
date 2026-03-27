@@ -67,10 +67,13 @@
                  x-data="{ uploadAtivo: false }"
                  @foto-upload-iniciado.window="uploadAtivo = true"
                  @foto-upload-concluido.window="uploadAtivo = false">
-                @if($statusAtual === 'publicado')
-                    <button class="btn-publicar btn-publicado" disabled>
-                        ✓ Trabalho publicado
-                    </button>
+                @if($trabalho->status === 'publicado')
+                    <div style="display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; background:#d4f5e9; border-radius:8px;">
+                        <i class="bi bi-check-circle-fill" style="color:#27ae60; font-size:20px;"></i>
+                        <span style="font-family:'Inter',sans-serif; font-weight:600; font-size:16px; color:#27ae60;">
+                            Trabalho publicado — links ativos para os clientes
+                        </span>
+                    </div>
                 @else
                     <button wire:click="publicar"
                             class="btn-publicar"
@@ -79,10 +82,10 @@
                             :title="uploadAtivo ? 'Aguarde o envio das fotos terminar' : ''">
                         Publicar trabalho e liberar links
                     </button>
+                    <p style="text-align: center; font-size: 14px; color: #8c6b7d; margin-top: 8px; margin-bottom: 0;">
+                        Após publicar, os clientes poderão acessar as fotos pelos links gerados
+                    </p>
                 @endif
-                <p style="text-align: center; font-size: 14px; color: #8c6b7d; margin-top: 8px; margin-bottom: 0;">
-                    Após publicar, os clientes poderão acessar as fotos pelos links gerados
-                </p>
             </div>
         @endif
     @endif

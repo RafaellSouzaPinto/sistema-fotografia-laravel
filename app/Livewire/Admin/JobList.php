@@ -8,7 +8,6 @@ use App\Models\Trabalho;
 use App\Models\TrabalhoCliente;
 use App\Services\GoogleDriveService;
 use Livewire\Component;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 
@@ -22,34 +21,6 @@ class JobList extends Component
     // Modal de renovação de links
     public int $renovarTrabalhoId = 0;
     public int $diasRenovacao = 30;
-
-    #[Computed]
-    public function totalPublicados(): int
-    {
-        return Trabalho::where('status', 'publicado')->count();
-    }
-
-    #[Computed]
-    public function totalClientes(): int
-    {
-        return Cliente::count();
-    }
-
-    #[Computed]
-    public function totalFotos(): int
-    {
-        return Foto::count();
-    }
-
-    #[Computed]
-    public function linksExpirandoEmBreve(): int
-    {
-        return TrabalhoCliente::where('status_link', 'disponivel')
-            ->whereNotNull('expira_em')
-            ->where('expira_em', '<=', now()->addDays(7))
-            ->where('expira_em', '>', now())
-            ->count();
-    }
 
     public function abrirModalRenovar(int $trabalhoId): void
     {
@@ -179,6 +150,21 @@ class JobList extends Component
 
         $trabalhos = $query->orderBy('created_at', 'desc')->get();
 
-        return view('livewire.admin.job-list', compact('trabalhos'));
+        $totalPublicados       = Trabalho::where('status', 'publicado')->count();
+        $totalClientes         = Cliente::count();
+        $totalFotos            = Foto::count();
+        $linksExpirandoEmBreve = TrabalhoCliente::where('status_link', 'disponivel')
+            ->whereNotNull('expira_em')
+            ->where('expira_em', '<=', now()->addDays(7))
+            ->where('expira_em', '>', now())
+            ->count();
+
+        return view('livewire.admin.job-list', compact(
+            'trabalhos',
+            'totalPublicados',
+            'totalClientes',
+            'totalFotos',
+            'linksExpirandoEmBreve'
+        ));
     }
 }

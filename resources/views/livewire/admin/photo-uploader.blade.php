@@ -92,10 +92,9 @@
                  this.enviando = false;
                  this.concluido = true;
                  window.dispatchEvent(new CustomEvent('foto-upload-concluido'));
-                 setTimeout(() => {
-                     this.concluido = false;
-                     $wire.$refresh();
-                 }, 3000);
+                 // Atualiza o grid imediatamente, mantém mensagem de sucesso por 3s
+                 $wire.$refresh();
+                 setTimeout(() => { this.concluido = false; }, 3000);
              }
          }">
 
@@ -200,8 +199,7 @@
 
     {{-- Grid de thumbnails com drag and drop --}}
     <div id="fotos-sortable-{{ $trabalhoId }}"
-         class="row g-2 mt-2"
-         wire:ignore>
+         class="row g-2 mt-2">
         @foreach($this->fotosDoTrabalho as $foto)
         <div class="col-4 col-md-3 col-lg-2 foto-item"
              data-id="{{ $foto->id }}"
@@ -257,31 +255,42 @@
 
     {{-- Script SortableJS --}}
     <script>
-    document.addEventListener('livewire:initialized', () => {
-        iniciarSortable{{ $trabalhoId }}();
-    });
+    (function () {
+        let sortableInstance{{ $trabalhoId }} = null;
 
-    document.addEventListener('loteProcessado', () => {
-        setTimeout(iniciarSortable{{ $trabalhoId }}, 500);
-    });
+        function iniciarSortable{{ $trabalhoId }}() {
+            const el = document.getElementById('fotos-sortable-{{ $trabalhoId }}');
+            if (!el || typeof Sortable === 'undefined') return;
 
-    function iniciarSortable{{ $trabalhoId }}() {
-        const el = document.getElementById('fotos-sortable-{{ $trabalhoId }}');
-        if (!el || typeof Sortable === 'undefined') return;
+            // Destroi instância anterior para evitar duplicação
+            if (sortableInstance{{ $trabalhoId }}) {
+                sortableInstance{{ $trabalhoId }}.destroy();
+                sortableInstance{{ $trabalhoId }} = null;
+            }
 
-        new Sortable(el, {
-            animation: 150,
-            ghostClass: 'sortable-ghost',
-            dragClass: 'sortable-drag',
-            handle: '.foto-item',
-            onEnd: function () {
-                const ids = [...el.querySelectorAll('.foto-item[data-id]')]
-                    .map(item => parseInt(item.dataset.id));
+            sortableInstance{{ $trabalhoId }} = new Sortable(el, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                handle: '.foto-item',
+                onEnd: function () {
+                    const ids = [...el.querySelectorAll('.foto-item[data-id]')]
+                        .map(item => parseInt(item.dataset.id));
+                    @this.reordenar(ids);
+                }
+            });
+        }
 
-                @this.reordenar(ids);
+        // Inicializa quando Livewire está pronto
+        document.addEventListener('livewire:initialized', iniciarSortable{{ $trabalhoId }});
+
+        // Re-inicializa após cada re-render do Livewire (inclui após $refresh)
+        Livewire.hook('morph.updated', ({ el }) => {
+            if (el.id === 'fotos-sortable-{{ $trabalhoId }}') {
+                iniciarSortable{{ $trabalhoId }}();
             }
         });
-    }
+    })();
     </script>
 
     {{-- Estilos do drag and drop --}}

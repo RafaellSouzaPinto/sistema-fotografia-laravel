@@ -15,7 +15,7 @@
                 <div class="card-body py-4">
                     <i class="bi bi-camera fs-2" style="color:#c27a8e"></i>
                     <div class="mt-2" style="font-size:2rem; font-weight:700; color:#4a2c3d; font-family:'Playfair Display',serif">
-                        {{ $this->totalPublicados }}
+                        {{ $totalPublicados }}
                     </div>
                     <div class="text-secondary small mt-1">Trabalhos publicados</div>
                 </div>
@@ -28,7 +28,7 @@
                 <div class="card-body py-4">
                     <i class="bi bi-people fs-2" style="color:#c27a8e"></i>
                     <div class="mt-2" style="font-size:2rem; font-weight:700; color:#4a2c3d; font-family:'Playfair Display',serif">
-                        {{ $this->totalClientes }}
+                        {{ $totalClientes }}
                     </div>
                     <div class="text-secondary small mt-1">Clientes cadastrados</div>
                 </div>
@@ -41,7 +41,7 @@
                 <div class="card-body py-4">
                     <i class="bi bi-images fs-2" style="color:#c27a8e"></i>
                     <div class="mt-2" style="font-size:2rem; font-weight:700; color:#4a2c3d; font-family:'Playfair Display',serif">
-                        {{ number_format($this->totalFotos, 0, ',', '.') }}
+                        {{ number_format($totalFotos, 0, ',', '.') }}
                     </div>
                     <div class="text-secondary small mt-1">Fotos armazenadas</div>
                 </div>
@@ -50,14 +50,14 @@
     </div>
 
     {{-- Alerta de links expirando --}}
-    @if($this->linksExpirandoEmBreve > 0)
+    @if($linksExpirandoEmBreve > 0)
     <div class="alert d-flex align-items-center justify-content-between mb-4"
          style="background:#fff3cd; border:1px solid #ffc107; border-radius:8px">
         <div>
             <i class="bi bi-exclamation-triangle-fill me-2" style="color:#856404"></i>
             <strong style="color:#856404">
-                {{ $this->linksExpirandoEmBreve }}
-                {{ $this->linksExpirandoEmBreve === 1 ? 'link expira' : 'links expiram' }}
+                {{ $linksExpirandoEmBreve }}
+                {{ $linksExpirandoEmBreve === 1 ? 'link expira' : 'links expiram' }}
                 nos próximos 7 dias
             </strong>
         </div>

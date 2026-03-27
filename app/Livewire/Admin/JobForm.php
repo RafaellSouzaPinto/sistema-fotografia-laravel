@@ -6,6 +6,7 @@ use App\Models\Trabalho;
 use App\Services\GoogleDriveService;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 
 #[Layout('layouts.admin')]
 class JobForm extends Component
@@ -86,6 +87,12 @@ class JobForm extends Component
         $this->statusAtual = $trabalho->status;
 
         $this->dispatch('notify', message: 'Trabalho salvo com sucesso!');
+    }
+
+    #[On('trabalhoAtualizado')]
+    public function refreshTrabalho(): void
+    {
+        // Re-renderiza com dados frescos após sub-componentes atualizarem
     }
 
     public function publicar(): void

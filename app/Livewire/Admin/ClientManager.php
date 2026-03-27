@@ -89,6 +89,7 @@ class ClientManager extends Component
         $this->telefoneBuscado = false;
 
         $this->dispatch('notify', message: 'Cliente adicionado com sucesso!');
+        $this->dispatch('trabalhoAtualizado');
     }
 
     public function abrirRenovacao(int $vinculoId): void
@@ -129,6 +130,7 @@ class ClientManager extends Component
         $trabalho = Trabalho::findOrFail($this->trabalhoId);
         $trabalho->clientes()->detach($clienteId);
         $this->dispatch('notify', message: 'Cliente removido do trabalho.');
+        $this->dispatch('trabalhoAtualizado');
     }
 
     public function render()
