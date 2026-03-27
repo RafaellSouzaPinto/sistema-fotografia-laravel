@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Cliente;
 use App\Models\Trabalho;
+use App\Models\TrabalhoCliente;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -16,6 +17,8 @@ class ClientManager extends Component
     public bool $clienteEncontrado = false;
     public bool $telefoneBuscado = false;
     public int $diasExpiracao = 30;
+    public int $renovandoVinculoId = 0;
+    public int $diasRenovacao = 30;
 
     public function buscarPorTelefone(): void
     {
@@ -88,6 +91,39 @@ class ClientManager extends Component
         $this->dispatch('notify', message: 'Cliente adicionado com sucesso!');
     }
 
+    public function abrirRenovacao(int $vinculoId): void
+    {
+        $this->renovandoVinculoId = $vinculoId;
+        $this->diasRenovacao = 30;
+    }
+
+    public function cancelarRenovacao(): void
+    {
+        $this->renovandoVinculoId = 0;
+        $this->diasRenovacao = 30;
+    }
+
+    public function renovar(): void
+    {
+        $this->validate([
+            'diasRenovacao' => 'required|integer|min:1|max:365',
+        ], [
+            'diasRenovacao.min' => 'Informe pelo menos 1 dia.',
+            'diasRenovacao.max' => 'Máximo de 365 dias.',
+        ]);
+
+        $vinculo = TrabalhoCliente::findOrFail($this->renovandoVinculoId);
+
+        $vinculo->update([
+            'expira_em'   => now()->addDays($this->diasRenovacao),
+            'status_link' => 'disponivel',
+        ]);
+
+        $diasRenovados = $this->diasRenovacao;
+        $this->cancelarRenovacao();
+        $this->dispatch('notify', tipo: 'sucesso', mensagem: "Link renovado por {$diasRenovados} dias!");
+    }
+
     public function remover(int $clienteId): void
     {
         $trabalho = Trabalho::findOrFail($this->trabalhoId);
@@ -102,6 +138,19 @@ class ClientManager extends Component
             ->withPivot('token', 'expira_em', 'status_link', 'id')
             ->get();
 
-        return view('livewire.admin.client-manager', compact('clientesVinculados'));
+        // Mapeia para TrabalhoCliente para usar métodos como estaExpirado()
+        $vinculos = $clientesVinculados->map(function ($cliente) {
+            $pivot = $cliente->pivot;
+            $vinculo = \App\Models\TrabalhoCliente::find($pivot->id);
+            if ($vinculo) {
+                $vinculo->setRelation('cliente', $cliente);
+            }
+            return $vinculo;
+        })->filter();
+
+        return view('livewire.admin.client-manager', [
+            'clientesVinculados' => $clientesVinculados,
+            'vinculos' => $vinculos,
+        ]);
     }
 }

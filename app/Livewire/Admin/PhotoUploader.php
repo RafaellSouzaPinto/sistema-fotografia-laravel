@@ -8,6 +8,7 @@ use App\Services\GoogleDriveService;
 use App\Services\ImageCompressorService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Storage;
 
 class PhotoUploader extends Component
@@ -137,6 +138,30 @@ class PhotoUploader extends Component
 
         // Sempre despacha o evento — Alpine.js usa para controlar o progresso
         $this->dispatch('loteProcessado', processadas: $processadas, falhas: $falhas);
+    }
+
+    #[Computed]
+    public function fotosDoTrabalho()
+    {
+        return Foto::where('trabalho_id', $this->trabalhoId)
+            ->orderBy('ordem')
+            ->get();
+    }
+
+    /**
+     * Recebe array de IDs na nova ordem e atualiza a coluna `ordem`.
+     *
+     * @param array<int> $ids IDs das fotos na nova ordem
+     */
+    public function reordenar(array $ids): void
+    {
+        foreach ($ids as $posicao => $fotoId) {
+            Foto::where('id', $fotoId)
+                ->where('trabalho_id', $this->trabalhoId)
+                ->update(['ordem' => $posicao + 1]);
+        }
+
+        $this->dispatch('notify', tipo: 'sucesso', mensagem: 'Ordem das fotos salva!');
     }
 
     public function removerFoto(int $fotoId): void

@@ -25,12 +25,32 @@
             <a href="{{ route('admin.clients') }}" class="nav-link {{ request()->routeIs('admin.clients') ? 'active' : '' }}">
                 Meus Clientes
             </a>
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                @csrf
-                <button type="submit" class="nav-link-logout" style="background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px;">
-                    <i class="bi bi-box-arrow-right"></i> Sair
+            <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle text-decoration-none nav-link"
+                        style="color:#4a2c3d; font-weight:500; font-size:14px; font-family:'Inter',sans-serif; padding:0"
+                        data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle me-1" style="color:#c27a8e"></i>
+                    {{ auth()->user()->nome }}
                 </button>
-            </form>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.perfil') }}">
+                            <i class="bi bi-key me-2" style="color:#c27a8e"></i>
+                            Alterar senha
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}" style="margin:0">
+                            @csrf
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Sair
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </nav>
     </header>
 
@@ -51,5 +71,6 @@
     @livewireScripts
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </body>
 </html>

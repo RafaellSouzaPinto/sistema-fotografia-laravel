@@ -57,54 +57,85 @@
     </button>
 
     <!-- Lista de clientes vinculados -->
-    @if($clientesVinculados->isNotEmpty())
+    @if($vinculos->isNotEmpty())
         <div>
-            @foreach($clientesVinculados as $cliente)
-                @php
-                    $pivot = $cliente->pivot;
-                    $expirado = $pivot->expira_em && \Carbon\Carbon::parse($pivot->expira_em)->isPast();
-                @endphp
-                <div class="cliente-row">
-                    <div class="cliente-info">
-                        <div class="nome">{{ $cliente->nome }}</div>
-                        <div class="telefone">{{ $cliente->telefone }}</div>
-                        <span class="link-galeria" title="{{ url('/galeria/' . $pivot->token) }}">
-                            {{ url('/galeria/' . $pivot->token) }}
-                        </span>
+            @foreach($vinculos as $vinculo)
+                <div class="cliente-row" style="flex-direction: column; align-items: stretch; gap: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                        <div class="cliente-info">
+                            <div class="nome">{{ $vinculo->cliente->nome }}</div>
+                            <div class="telefone">{{ $vinculo->cliente->telefone }}</div>
+                            <span class="link-galeria" title="{{ url('/galeria/' . $vinculo->token) }}">
+                                {{ url('/galeria/' . $vinculo->token) }}
+                            </span>
 
-                        {{-- Status de expiração --}}
-                        @if($expirado || $pivot->status_link === 'expirado')
-                            <span class="badge bg-danger mt-1" style="font-size: 12px;">Expirado</span>
-                        @elseif($pivot->expira_em)
-                            @php
-                                $diasRestantes = (int) now()->diffInDays(\Carbon\Carbon::parse($pivot->expira_em), false);
-                            @endphp
-                            @if($diasRestantes <= 3)
-                                <span class="badge bg-warning text-dark mt-1" style="font-size: 12px;">Expira em {{ $diasRestantes }} dia(s)</span>
+                            {{-- Badge de status --}}
+                            @if($vinculo->estaExpirado())
+                                <span class="badge bg-danger mt-1" style="font-size: 12px;">Expirado</span>
+                            @elseif($vinculo->diasRestantes() !== null && $vinculo->diasRestantes() <= 7)
+                                <span class="badge bg-warning text-dark mt-1" style="font-size: 12px;">
+                                    {{ $vinculo->tempoRestanteFormatado() }}
+                                </span>
+                            @elseif($vinculo->expira_em)
+                                <span class="badge bg-success mt-1" style="font-size: 12px;">
+                                    {{ $vinculo->tempoRestanteFormatado() }}
+                                </span>
                             @else
-                                <span class="badge bg-success mt-1" style="font-size: 12px;">{{ $diasRestantes }} dias restantes</span>
+                                <span class="badge bg-secondary mt-1" style="font-size: 12px;">Sem prazo</span>
                             @endif
-                        @else
-                            <span class="badge bg-secondary mt-1" style="font-size: 12px;">Sem prazo</span>
-                        @endif
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        @if(!$expirado && $pivot->status_link !== 'expirado')
-                            <button
-                                x-data="{ copiado: false }"
-                                @click="navigator.clipboard.writeText('{{ url('/galeria/' . $pivot->token) }}').then(() => { copiado = true; setTimeout(() => copiado = false, 2000) })"
-                                class="btn-outline-rosa"
-                                :style="copiado ? 'color: #27ae60;' : ''">
-                                <i class="bi bi-clipboard"></i>
-                                <span x-text="copiado ? '✓ Copiado!' : 'Copiar link'"></span>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            {{-- Copiar link --}}
+                            @if(!$vinculo->estaExpirado())
+                                <button
+                                    x-data="{ copiado: false }"
+                                    @click="navigator.clipboard.writeText('{{ url('/galeria/' . $vinculo->token) }}').then(() => { copiado = true; setTimeout(() => copiado = false, 2000) })"
+                                    class="btn-outline-rosa"
+                                    :style="copiado ? 'color: #27ae60;' : ''">
+                                    <i class="bi bi-clipboard"></i>
+                                    <span x-text="copiado ? '✓ Copiado!' : 'Copiar link'"></span>
+                                </button>
+                            @endif
+                            {{-- Renovar (só expirados) --}}
+                            @if($vinculo->estaExpirado())
+                                <button wire:click="abrirRenovacao({{ $vinculo->id }})" class="btn btn-warning btn-sm">
+                                    Renovar
+                                </button>
+                            @endif
+                            {{-- Remover --}}
+                            <button wire:click="remover({{ $vinculo->cliente->id }})"
+                                    wire:confirm="Tem certeza que deseja remover {{ $vinculo->cliente->nome }} deste trabalho?"
+                                    class="btn-perigo">
+                                <i class="bi bi-trash"></i> Remover
                             </button>
-                        @endif
-                        <button wire:click="remover({{ $cliente->id }})"
-                                wire:confirm="Tem certeza que deseja remover {{ $cliente->nome }} deste trabalho?"
-                                class="btn-perigo">
-                            <i class="bi bi-trash"></i> Remover
-                        </button>
+                        </div>
                     </div>
+
+                    {{-- Painel de renovação inline --}}
+                    @if($renovandoVinculoId === $vinculo->id)
+                    <div class="mt-3 p-3 rounded" style="background:#fff3cd; border:1px solid #ffc107">
+                        <p class="fw-bold mb-2">Renovar acesso de {{ $vinculo->cliente->nome }}</p>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <label class="fw-semibold">Conceder mais:</label>
+                            <select wire:model="diasRenovacao" class="form-select form-select-sm" style="width:auto">
+                                <option value="7">7 dias</option>
+                                <option value="15">15 dias</option>
+                                <option value="30">30 dias</option>
+                                <option value="60">60 dias</option>
+                                <option value="90">90 dias</option>
+                            </select>
+                            <button wire:click="renovar" class="btn btn-success btn-sm">
+                                Confirmar renovação
+                            </button>
+                            <button wire:click="cancelarRenovacao" class="btn btn-outline-secondary btn-sm">
+                                Cancelar
+                            </button>
+                        </div>
+                        @error('diasRenovacao')
+                            <small class="text-danger d-block mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
+                    @endif
                 </div>
             @endforeach
         </div>

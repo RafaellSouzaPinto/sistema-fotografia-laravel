@@ -198,37 +198,105 @@
         </div>
     </div>
 
-    {{-- Grid de thumbnails (atualizado pelo Livewire após cada lote) --}}
-    @if($fotos->isNotEmpty())
-        <div class="grid-fotos-admin mt-3">
-            @foreach($fotos as $foto)
-                <div class="foto-admin-wrapper">
-                    @if($foto->drive_thumbnail && str_starts_with($foto->drive_thumbnail, 'http'))
-                        <img src="{{ $foto->drive_thumbnail }}"
-                             alt="{{ $foto->nome_arquivo }}"
-                             class="foto-thumb"
-                             loading="lazy"
-                             onerror="this.src='/img/placeholder.svg'">
-                    @elseif($foto->caminho_thumbnail)
-                        <img src="{{ asset('storage/' . $foto->caminho_thumbnail) }}"
-                             alt="{{ $foto->nome_arquivo }}"
-                             class="foto-thumb"
-                             loading="lazy">
-                    @elseif(str_starts_with($foto->drive_arquivo_id, 'fotos/'))
-                        <img src="{{ asset('storage/' . $foto->drive_arquivo_id) }}"
-                             alt="{{ $foto->nome_arquivo }}"
-                             class="foto-thumb"
-                             loading="lazy">
-                    @else
-                        <div class="foto-thumb skeleton" title="{{ $foto->nome_arquivo }}"></div>
-                    @endif
-                    <button wire:click="removerFoto({{ $foto->id }})"
-                            wire:confirm="Remover esta foto?"
-                            class="foto-remove-btn"
-                            title="Remover foto">✕</button>
+    {{-- Grid de thumbnails com drag and drop --}}
+    <div id="fotos-sortable-{{ $trabalhoId }}"
+         class="row g-2 mt-2"
+         wire:ignore>
+        @foreach($this->fotosDoTrabalho as $foto)
+        <div class="col-4 col-md-3 col-lg-2 foto-item"
+             data-id="{{ $foto->id }}"
+             style="cursor: grab">
+            <div class="position-relative rounded overflow-hidden border"
+                 style="background:#fce4ec">
+
+                {{-- Thumbnail --}}
+                @if($foto->caminho_thumbnail)
+                    <img src="{{ asset('storage/' . $foto->caminho_thumbnail) }}"
+                         alt="{{ $foto->nome_arquivo }}"
+                         loading="lazy"
+                         style="width:100%; aspect-ratio:1/1; object-fit:cover; display:block">
+                @elseif($foto->drive_thumbnail)
+                    <img src="{{ $foto->drive_thumbnail }}"
+                         alt="{{ $foto->nome_arquivo }}"
+                         loading="lazy"
+                         style="width:100%; aspect-ratio:1/1; object-fit:cover; display:block">
+                @else
+                    <div class="d-flex align-items-center justify-content-center"
+                         style="width:100%; aspect-ratio:1/1; background:#fce4ec">
+                        <i class="bi bi-image" style="color:#c27a8e; font-size:1.5rem"></i>
+                    </div>
+                @endif
+
+                {{-- Ícone de arrastar (canto superior esquerdo) --}}
+                <div class="position-absolute top-0 start-0 p-1"
+                     style="background:rgba(74,44,61,0.5); border-radius:0 0 6px 0; cursor:grab">
+                    <i class="bi bi-grip-vertical text-white" style="font-size:0.75rem"></i>
                 </div>
-            @endforeach
+
+                {{-- Botão remover (canto superior direito) --}}
+                <button wire:click="removerFoto({{ $foto->id }})"
+                    wire:confirm="Remover a foto {{ $foto->nome_arquivo }}?"
+                    class="position-absolute top-0 end-0 m-1 btn btn-danger btn-sm p-0 d-flex align-items-center justify-content-center"
+                    style="width:24px; height:24px; border-radius:50%">
+                    <i class="bi bi-x" style="font-size:0.75rem"></i>
+                </button>
+
+                {{-- Nome do arquivo --}}
+                <div class="position-absolute bottom-0 start-0 end-0 px-1 py-1 text-truncate"
+                     style="background:rgba(74,44,61,0.6); color:#fff; font-size:0.65rem">
+                    {{ $foto->nome_arquivo }}
+                </div>
+            </div>
         </div>
-        <p style="font-size: 14px; color: #8c6b7d; margin-top: 12px;">{{ $fotos->count() }} foto(s) enviada(s)</p>
+        @endforeach
+    </div>
+
+    @if($this->fotosDoTrabalho->isNotEmpty())
+        <p style="font-size: 14px; color: #8c6b7d; margin-top: 12px;">{{ $this->fotosDoTrabalho->count() }} foto(s) enviada(s)</p>
     @endif
+
+    {{-- Script SortableJS --}}
+    <script>
+    document.addEventListener('livewire:initialized', () => {
+        iniciarSortable{{ $trabalhoId }}();
+    });
+
+    document.addEventListener('loteProcessado', () => {
+        setTimeout(iniciarSortable{{ $trabalhoId }}, 500);
+    });
+
+    function iniciarSortable{{ $trabalhoId }}() {
+        const el = document.getElementById('fotos-sortable-{{ $trabalhoId }}');
+        if (!el || typeof Sortable === 'undefined') return;
+
+        new Sortable(el, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            dragClass: 'sortable-drag',
+            handle: '.foto-item',
+            onEnd: function () {
+                const ids = [...el.querySelectorAll('.foto-item[data-id]')]
+                    .map(item => parseInt(item.dataset.id));
+
+                @this.reordenar(ids);
+            }
+        });
+    }
+    </script>
+
+    {{-- Estilos do drag and drop --}}
+    <style>
+    .sortable-ghost {
+        opacity: 0.4;
+        background: #fce4ec;
+    }
+    .sortable-drag {
+        opacity: 0.9;
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .foto-item[data-id]:active {
+        cursor: grabbing;
+    }
+    </style>
 </div>

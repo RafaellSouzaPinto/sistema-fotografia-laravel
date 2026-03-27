@@ -4,7 +4,7 @@ return [
     'nome' => 'Silvia Souza',
     'titulo' => 'Silvia Souza Fotografa',
     'subtitulo' => 'Fotógrafa',
-    'tagline' => 'Registrando momentos especiais há mais de 40 anos',
+    'tagline' => 'Cada foto, uma memória guardada para sempre.',
     'desde' => '1985',
     'telefone' => '(11) 99950-2677',
     'whatsapp_link' => 'https://wa.me/5511999502677',

@@ -102,7 +102,7 @@ Margin: 0 auto
 **Textos abaixo da foto:**
 - "Silvia Souza" — Playfair Display 700, 42px, `#4a2c3d`, margin-top 24px
 - "Fotógrafa" — Playfair Display Italic 400, 20px, `#8c6b7d`
-- "Registrando momentos especiais há mais de 40 anos" — Inter 400, 16px, `#8c6b7d`, margin-top 8px
+- "Cada foto, uma memória guardada para sempre." — Inter 400, 16px, `#8c6b7d`, margin-top 8px
 
 **Número WhatsApp (centralizado, destaque):**
 ```
@@ -377,7 +377,7 @@ return [
     'nome' => 'Silvia Souza',
     'titulo' => 'Silvia Souza Fotografa',
     'subtitulo' => 'Fotógrafa',
-    'tagline' => 'Registrando momentos especiais há mais de 40 anos',
+    'tagline' => 'Cada foto, uma memória guardada para sempre.',
     'desde' => '1985',
     'telefone' => '(11) 98765-4321',
     'whatsapp_link' => 'https://wa.me/5511987654321',

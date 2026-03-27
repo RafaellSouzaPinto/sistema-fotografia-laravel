@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Livewire\Admin\AlterarSenha;
 use App\Livewire\Admin\JobList;
 use App\Livewire\Admin\JobForm;
 use App\Livewire\Admin\ClientList;
@@ -22,6 +23,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/jobs/create', JobForm::class)->name('admin.jobs.create');
     Route::get('/jobs/{id}/edit', JobForm::class)->name('admin.jobs.edit');
     Route::get('/clients', ClientList::class)->name('admin.clients');
+    Route::get('/perfil', AlterarSenha::class)->name('admin.perfil');
     
     // Rota de thumbnail proxy
     Route::get('/thumbnail/{foto}', function (\App\Models\Foto $foto) {

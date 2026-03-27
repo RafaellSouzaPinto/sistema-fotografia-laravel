@@ -2,9 +2,13 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\Cliente;
+use App\Models\Foto;
 use App\Models\Trabalho;
+use App\Models\TrabalhoCliente;
 use App\Services\GoogleDriveService;
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 
@@ -14,6 +18,88 @@ class JobList extends Component
 {
     public string $busca = '';
     public string $filtroTipo = 'todos';
+
+    // Modal de renovação de links
+    public int $renovarTrabalhoId = 0;
+    public int $diasRenovacao = 30;
+
+    #[Computed]
+    public function totalPublicados(): int
+    {
+        return Trabalho::where('status', 'publicado')->count();
+    }
+
+    #[Computed]
+    public function totalClientes(): int
+    {
+        return Cliente::count();
+    }
+
+    #[Computed]
+    public function totalFotos(): int
+    {
+        return Foto::count();
+    }
+
+    #[Computed]
+    public function linksExpirandoEmBreve(): int
+    {
+        return TrabalhoCliente::where('status_link', 'disponivel')
+            ->whereNotNull('expira_em')
+            ->where('expira_em', '<=', now()->addDays(7))
+            ->where('expira_em', '>', now())
+            ->count();
+    }
+
+    public function abrirModalRenovar(int $trabalhoId): void
+    {
+        $this->renovarTrabalhoId = $trabalhoId;
+        $this->diasRenovacao = 30;
+        $this->dispatch('abrirModalRenovar');
+    }
+
+    public function renovarTodosExpirados(): void
+    {
+        $this->validate([
+            'diasRenovacao' => 'required|integer|min:1|max:365',
+        ], [
+            'diasRenovacao.min' => 'Informe pelo menos 1 dia.',
+            'diasRenovacao.max' => 'Máximo de 365 dias.',
+        ]);
+
+        $renovados = TrabalhoCliente::where('trabalho_id', $this->renovarTrabalhoId)
+            ->where(function ($q) {
+                $q->where('status_link', 'expirado')
+                  ->orWhere(function ($q2) {
+                      $q2->whereNotNull('expira_em')
+                         ->where('expira_em', '<', now());
+                  });
+            })
+            ->update([
+                'status_link' => 'disponivel',
+                'expira_em'   => now()->addDays($this->diasRenovacao),
+            ]);
+
+        $this->renovarTrabalhoId = 0;
+        $this->js("bootstrap.Modal.getInstance(document.getElementById('modal-renovar-links'))?.hide()");
+        $this->dispatch('notify', message: "{$renovados} " . ($renovados === 1 ? 'link renovado' : 'links renovados') . " por {$this->diasRenovacao} dias!");
+    }
+
+    public function getVinculosExpiradosProperty()
+    {
+        if (!$this->renovarTrabalhoId) return collect();
+
+        return TrabalhoCliente::with('cliente')
+            ->where('trabalho_id', $this->renovarTrabalhoId)
+            ->where(function ($q) {
+                $q->where('status_link', 'expirado')
+                  ->orWhere(function ($q2) {
+                      $q2->whereNotNull('expira_em')
+                         ->where('expira_em', '<', now());
+                  });
+            })
+            ->get();
+    }
 
     public function excluir(int $id): void
     {
@@ -66,9 +152,12 @@ class JobList extends Component
     public function render()
     {
         $query = Trabalho::withCount(['fotos', 'clientes'])
-            ->with(['clientes' => function ($q) {
-                $q->withPivot('status_link', 'expira_em');
-            }]);
+            ->with([
+                'clientes' => function ($q) {
+                    $q->withPivot('status_link', 'expira_em');
+                },
+                'fotos' => fn($q) => $q->orderBy('ordem')->limit(1),
+            ]);
 
         if ($this->busca) {
             $query->where('titulo', 'like', "%{$this->busca}%");
