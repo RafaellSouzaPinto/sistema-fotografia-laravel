@@ -13,15 +13,22 @@ class GalleryController extends Controller
     {
         $pivot = TrabalhoCliente::with(['trabalho', 'cliente'])->where('token', $token)->firstOrFail();
 
+        $dadosContato = [
+            'nomeTrabalho'  => $pivot->trabalho->titulo,
+            'nomeFotografa' => config('site.nome', 'Silvia Souza'),
+            'telefone'      => config('site.telefone', '(11) 99950-2677'),
+            'whatsappLink'  => config('site.whatsapp_link', 'https://wa.me/5511999502677'),
+        ];
+
+        // Trabalho ainda não publicado
+        if ($pivot->trabalho->status !== 'publicado') {
+            return view('gallery.nao-disponivel', $dadosContato);
+        }
+
         // Verificar expiração
         if ($pivot->status_link === 'expirado' || ($pivot->expira_em && $pivot->expira_em->isPast())) {
             $pivot->marcarComoExpirado();
-            return view('gallery.expirado', [
-                'nomeTrabalho' => $pivot->trabalho->titulo,
-                'nomeFotografa' => config('site.nome', 'Silvia Souza'),
-                'telefone' => config('site.telefone', '(11) 99950-2677'),
-                'whatsappLink' => config('site.whatsapp_link', 'https://wa.me/5511999502677'),
-            ]);
+            return view('gallery.expirado', $dadosContato);
         }
 
         $trabalho = $pivot->trabalho;
@@ -33,7 +40,12 @@ class GalleryController extends Controller
 
     public function downloadFoto(string $token, Foto $foto)
     {
-        $pivot = TrabalhoCliente::where('token', $token)->firstOrFail();
+        $pivot = TrabalhoCliente::with('trabalho')->where('token', $token)->firstOrFail();
+
+        // Verificar se publicado
+        if ($pivot->trabalho->status !== 'publicado') {
+            abort(403, 'Trabalho não publicado.');
+        }
 
         // Verificar expiração
         if ($pivot->status_link === 'expirado' || ($pivot->expira_em && $pivot->expira_em->isPast())) {
@@ -66,6 +78,11 @@ class GalleryController extends Controller
     public function downloadTodas(string $token)
     {
         $pivot = TrabalhoCliente::with('trabalho.fotos')->where('token', $token)->firstOrFail();
+
+        // Verificar se publicado
+        if ($pivot->trabalho->status !== 'publicado') {
+            abort(403, 'Trabalho não publicado.');
+        }
 
         // Verificar expiração
         if ($pivot->status_link === 'expirado' || ($pivot->expira_em && $pivot->expira_em->isPast())) {
