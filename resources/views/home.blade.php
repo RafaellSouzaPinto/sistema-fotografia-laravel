@@ -18,7 +18,7 @@
     {{-- ======================================================== --}}
     <header class="home-header">
         <a href="{{ url('/') }}" class="text-decoration-none">
-            <img src="{{ asset('img/img-silvia-logo.png') }}" alt="Silvia Souza Fotógrafa" style="height: 50px; width: auto;">
+            <img src="{{ asset('img/img-silvia-logo.png') }}" alt="Silvia Souza Fotógrafa" class="home-header-logo">
         </a>
         <a href="/login" class="home-header-login" aria-label="Área restrita">
             <i class="bi bi-person"></i>
@@ -29,43 +29,50 @@
     {{-- SEÇÃO 2 — Hero --}}
     {{-- ======================================================== --}}
     <section class="home-hero">
-        {{-- Foto circular --}}
-        <div style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid #c27a8e; margin: 0 auto; overflow: hidden; box-shadow: 0 4px 20px rgba(194,122,142,0.3); background: #fce4ec; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-            {{-- Quando tiver a foto real, trocar por: --}}
-            {{-- <img src="{{ asset('img/silvia-foto.jpg') }}" alt="Silvia Souza" style="width: 100%; height: 100%; object-fit: cover;"> --}}
-            <i class="bi bi-person-fill" style="font-size: 64px; color: #c27a8e; opacity: 0.4;"></i>
-            <small style="color: #8c6b7d; font-size: 11px;">Foto da Silvia</small>
-        </div>
+        <div class="home-hero-inner">
 
-        {{-- Nome e título --}}
-        <h1 style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 42px; color: #4a2c3d; margin: 24px 0 4px; text-align: center;">Silvia Souza</h1>
-        <p style="font-family: 'Playfair Display', serif; font-style: italic; font-size: 20px; color: #8c6b7d; margin: 0 0 16px; text-align: center;">Fotógrafa</p>
+            {{-- Coluna esquerda: foto --}}
+            <div class="home-hero-foto-col">
+                <div class="home-hero-foto-moldura">
+                    @if(file_exists(public_path('img/silvia-foto.jpg')))
+                        <img src="{{ asset('img/silvia-foto.jpg') }}" alt="Silvia Souza Fotógrafa" class="home-hero-foto">
+                    @else
+                        <div class="home-hero-foto-placeholder">
+                            <i class="bi bi-camera"></i>
+                            <small>Foto da Silvia</small>
+                        </div>
+                    @endif
+                </div>
+            </div>
 
-        {{-- Tagline --}}
-        <p class="home-hero-tagline">{{ config('site.tagline') }}</p>
+            {{-- Coluna direita: texto --}}
+            <div class="home-hero-texto-col">
+                <span class="ornamento-secao">Fotógrafa Profissional</span>
+                <h1 class="home-hero-nome">Silvia<br>Souza</h1>
+                <p class="home-hero-tagline">{{ config('site.tagline') }}</p>
 
-        {{-- Número WhatsApp --}}
-        <div class="home-hero-whatsapp-num">
-            <a href="{{ config('site.whatsapp_link') }}" target="_blank" rel="noopener" class="home-hero-whatsapp-link">
-                <i class="bi bi-whatsapp" style="color:#25D366;font-size:28px;"></i>
-                <span class="home-hero-telefone">{{ config('site.telefone') }}</span>
-            </a>
-            <p class="home-hero-whatsapp-hint">Toque para agendar pelo WhatsApp</p>
-        </div>
+                <div class="home-hero-contatos">
+                    <a href="{{ config('site.whatsapp_link') }}" target="_blank" rel="noopener" class="home-hero-whatsapp-link">
+                        <i class="bi bi-whatsapp"></i>
+                        <span class="home-hero-telefone">{{ config('site.telefone') }}</span>
+                    </a>
+                    <p class="home-hero-whatsapp-hint">Toque para agendar pelo WhatsApp</p>
+                </div>
 
-        {{-- Botão CTA WhatsApp --}}
-        <a href="{{ config('site.whatsapp_link') }}?text={{ urlencode(config('site.whatsapp_mensagem')) }}"
-           target="_blank" rel="noopener"
-           class="home-btn-whatsapp">
-            📱 Chamar no WhatsApp
-        </a>
+                <a href="{{ config('site.whatsapp_link') }}?text={{ urlencode(config('site.whatsapp_mensagem')) }}"
+                   target="_blank" rel="noopener"
+                   class="home-btn-whatsapp">
+                    <i class="bi bi-whatsapp"></i> Chamar no WhatsApp
+                </a>
 
-        {{-- Instagram --}}
-        <div class="home-hero-instagram">
-            <a href="{{ config('site.instagram_link') }}" target="_blank" rel="noopener" class="home-instagram-link">
-                <i class="bi bi-instagram" style="font-size:20px;"></i>
-                <span>{{ config('site.instagram') }}</span>
-            </a>
+                <div class="home-hero-instagram">
+                    <a href="{{ config('site.instagram_link') }}" target="_blank" rel="noopener" class="home-instagram-link">
+                        <i class="bi bi-instagram"></i>
+                        <span>{{ config('site.instagram') }}</span>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -73,20 +80,23 @@
     {{-- SEÇÃO 3 — O que eu faço (serviços) --}}
     {{-- ======================================================== --}}
     <section class="home-servicos">
+        <span class="ornamento-secao">Especialidades</span>
         <h2 class="home-section-titulo">O que eu faço</h2>
         <div class="home-section-linha"></div>
 
         <div class="home-servicos-grid">
             @foreach([
-                ['emoji' => '🎂', 'titulo' => 'Festas Infantis',        'desc' => 'Aniversários, batizados e comemorações. Cada sorriso registrado com carinho.'],
-                ['emoji' => '🎓', 'titulo' => 'Formaturas e Escolas',   'desc' => 'Colações de grau, eventos escolares e fotos de turma.'],
-                ['emoji' => '💒', 'titulo' => 'Casamentos',              'desc' => 'Do making of à festa. Todos os momentos eternizados.'],
-                ['emoji' => '👨‍👩‍👧‍👦', 'titulo' => 'Ensaios de Família',    'desc' => 'Sessões em estúdio ou ao ar livre. Memórias que duram para sempre.'],
-                ['emoji' => '🎉', 'titulo' => 'Festas e Eventos',        'desc' => 'Confraternizações, aniversários de adultos, eventos corporativos.'],
-                ['emoji' => '📸', 'titulo' => 'Ensaios Fotográficos',    'desc' => 'Gestantes, newborn, debutantes, books profissionais.'],
+                ['icone' => 'bi-balloon-heart',  'titulo' => 'Festas Infantis',       'desc' => 'Aniversários, batizados e comemorações. Cada sorriso registrado com carinho.'],
+                ['icone' => 'bi-mortarboard',    'titulo' => 'Formaturas e Escolas',  'desc' => 'Colações de grau, eventos escolares e fotos de turma.'],
+                ['icone' => 'bi-heart',          'titulo' => 'Casamentos',            'desc' => 'Do making of à festa. Todos os momentos eternizados.'],
+                ['icone' => 'bi-people',         'titulo' => 'Ensaios de Família',    'desc' => 'Sessões em estúdio ou ao ar livre. Memórias que duram para sempre.'],
+                ['icone' => 'bi-stars',          'titulo' => 'Festas e Eventos',      'desc' => 'Confraternizações, aniversários de adultos, eventos corporativos.'],
+                ['icone' => 'bi-camera',         'titulo' => 'Ensaios Fotográficos',  'desc' => 'Gestantes, newborn, debutantes, books profissionais.'],
             ] as $servico)
                 <div class="home-servico-card">
-                    <span class="home-servico-emoji">{{ $servico['emoji'] }}</span>
+                    <div class="home-servico-icone-wrap">
+                        <i class="bi {{ $servico['icone'] }} home-servico-icone"></i>
+                    </div>
                     <h3 class="home-servico-titulo">{{ $servico['titulo'] }}</h3>
                     <p class="home-servico-desc">{{ $servico['desc'] }}</p>
                 </div>
@@ -103,6 +113,7 @@
     @endphp
 
     <section class="home-portfolio" x-data="portfolioGaleria({{ json_encode($portfolioFotos) }})">
+        <span class="ornamento-secao">Portfólio</span>
         <h2 class="home-section-titulo">Meu Trabalho</h2>
         <div class="home-section-linha"></div>
         <p class="home-portfolio-subtitulo">Alguns registros dos eventos que tive o prazer de fotografar</p>
@@ -134,7 +145,7 @@
         {{-- Grid de fotos --}}
         <div class="home-portfolio-grid">
             @foreach($portfolioFotos as $i => $foto)
-                <div class="home-portfolio-item" @click="abrir({{ $i }})">
+                <div class="home-portfolio-item home-portfolio-item-{{ $i + 1 }}" @click="abrir({{ $i }})">
                     <img src="{{ $foto }}"
                          alt="Foto do portfolio {{ $i + 1 }}"
                          class="home-portfolio-img"
@@ -148,27 +159,32 @@
     {{-- SEÇÃO 5 — Depoimentos --}}
     {{-- ======================================================== --}}
     <section class="home-depoimentos">
+        <span class="ornamento-secao">Depoimentos</span>
         <h2 class="home-section-titulo">O que dizem sobre meu trabalho</h2>
         <div class="home-section-linha"></div>
 
         <div class="home-depoimentos-grid">
             @foreach([
                 [
-                    'texto' => '"A Silvia é incrível! As fotos do aniversário da minha filha ficaram perfeitas. Super atenciosa e profissional."',
+                    'texto' => 'A Silvia é incrível! As fotos do aniversário da minha filha ficaram perfeitas. Super atenciosa e profissional.',
                     'autor'  => 'Ana Silva, mãe da Beatriz',
                 ],
                 [
-                    'texto' => '"Contratamos para a formatura da turma e superou todas as expectativas. Recomendo de olhos fechados!"',
+                    'texto' => 'Contratamos para a formatura da turma e superou todas as expectativas. Recomendo de olhos fechados!',
                     'autor'  => 'Prof. Carlos Mendes',
                 ],
                 [
-                    'texto' => '"Já é a terceira vez que chamo a Silvia para nossos eventos. Sempre entrega um trabalho impecável."',
+                    'texto' => 'Já é a terceira vez que chamo a Silvia para nossos eventos. Sempre entrega um trabalho impecável.',
                     'autor'  => 'Marcos Oliveira',
                 ],
             ] as $dep)
                 <div class="home-depoimento-card">
+                    <div class="home-depoimento-aspas" aria-hidden="true">"</div>
                     <p class="home-depoimento-texto">{{ $dep['texto'] }}</p>
-                    <p class="home-depoimento-autor">{{ $dep['autor'] }}</p>
+                    <footer class="home-depoimento-rodape">
+                        <div class="home-depoimento-linha-decorativa"></div>
+                        <cite class="home-depoimento-autor">{{ $dep['autor'] }}</cite>
+                    </footer>
                 </div>
             @endforeach
         </div>
@@ -184,7 +200,7 @@
         <a href="{{ config('site.whatsapp_link') }}?text={{ urlencode('Olá Silvia! Vi seu site e gostaria de fazer um orçamento.') }}"
            target="_blank" rel="noopener"
            class="home-cta-btn">
-            📱 Falar com a Silvia
+            <i class="bi bi-whatsapp"></i> Falar com a Silvia
         </a>
 
         <p class="home-cta-telefone">{{ config('site.telefone') }}</p>
@@ -204,7 +220,7 @@
             </a>
         </div>
         <p class="home-footer-copy">© {{ date('Y') }} {{ config('site.titulo') }}</p>
-        <p class="home-footer-sub">Fotografia profissional desde {{ config('site.desde') }} 📸</p>
+        <p class="home-footer-sub">Fotografia profissional desde {{ config('site.desde') }} <i class="bi bi-camera" aria-hidden="true"></i></p>
     </footer>
 
     {{-- ======================================================== --}}
