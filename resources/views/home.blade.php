@@ -74,12 +74,37 @@
             </div>
 
         </div>
+        {{-- Scroll indicator --}}
+        <div class="home-hero-scroll-hint" aria-hidden="true">
+            <i class="bi bi-chevron-down"></i>
+        </div>
+
     </section>
+
+    {{-- ======================================================== --}}
+    {{-- SEÇÃO 2.5 — Stats Strip --}}
+    {{-- ======================================================== --}}
+    <div class="home-stats-strip">
+        <div class="home-stats-inner">
+            <div class="home-stat-item">
+                <span class="home-stat-quote" style="font-size:15px; line-height:1.35;">Milhares de momentos eternizados</span>
+            </div>
+            <div class="home-stat-divisor" aria-hidden="true"></div>
+            <div class="home-stat-item">
+                <span class="home-stat-numero">500<span class="home-stat-plus">+</span></span>
+                <span class="home-stat-label">eventos fotografados</span>
+            </div>
+            <div class="home-stat-divisor" aria-hidden="true"></div>
+            <div class="home-stat-item home-stat-frase">
+                <span class="home-stat-quote">Sua história merece ser contada</span>
+            </div>
+        </div>
+    </div>
 
     {{-- ======================================================== --}}
     {{-- SEÇÃO 3 — O que eu faço (serviços) --}}
     {{-- ======================================================== --}}
-    <section class="home-servicos">
+    <section class="home-servicos reveal-section">
         <span class="ornamento-secao">Especialidades</span>
         <h2 class="home-section-titulo">O que eu faço</h2>
         <div class="home-section-linha"></div>
@@ -93,9 +118,12 @@
                 ['icone' => 'bi-stars',          'titulo' => 'Festas e Eventos',      'desc' => 'Confraternizações, aniversários de adultos, eventos corporativos.'],
                 ['icone' => 'bi-camera',         'titulo' => 'Ensaios Fotográficos',  'desc' => 'Gestantes, newborn, debutantes, books profissionais.'],
             ] as $servico)
-                <div class="home-servico-card">
-                    <div class="home-servico-icone-wrap">
-                        <i class="bi {{ $servico['icone'] }} home-servico-icone"></i>
+                <div class="home-servico-card reveal-item" style="--reveal-delay: {{ $loop->index * 80 }}ms">
+                    <div class="home-servico-card-header">
+                        <div class="home-servico-icone-wrap">
+                            <i class="bi {{ $servico['icone'] }} home-servico-icone"></i>
+                        </div>
+                        <span class="home-servico-num" aria-hidden="true">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                     </div>
                     <h3 class="home-servico-titulo">{{ $servico['titulo'] }}</h3>
                     <p class="home-servico-desc">{{ $servico['desc'] }}</p>
@@ -143,9 +171,14 @@
         </div>
 
         {{-- Grid de fotos --}}
+        @php
+            $categorias = ['Casamento','Formatura','Festa Infantil','Ensaio','Família','Evento','Casamento','Debutante','Newborn','Ensaio','Família','Festa'];
+        @endphp
         <div class="home-portfolio-grid">
             @foreach($portfolioFotos as $i => $foto)
-                <div class="home-portfolio-item home-portfolio-item-{{ $i + 1 }}" @click="abrir({{ $i }})">
+                <div class="home-portfolio-item home-portfolio-item-{{ $i + 1 }}"
+                     data-categoria="{{ $categorias[$i] }}"
+                     @click="abrir({{ $i }})">
                     <img src="{{ $foto }}"
                          alt="Foto do portfolio {{ $i + 1 }}"
                          class="home-portfolio-img"
@@ -156,9 +189,31 @@
     </section>
 
     {{-- ======================================================== --}}
+    {{-- SEÇÃO 4.5 — Marquee editorial --}}
+    {{-- ======================================================== --}}
+    @php
+        $marqueeBase = ['Festas Infantis', 'Casamentos', 'Formaturas', 'Ensaios Fotográficos', 'Ensaios de Família', 'Eventos', 'Debutantes', 'Newborn'];
+        $marqueeItems = array_merge($marqueeBase, $marqueeBase, $marqueeBase, $marqueeBase);
+    @endphp
+    <div class="home-marquee-strip" aria-hidden="true">
+        <div class="home-marquee-track">
+            @foreach($marqueeItems as $item)
+                <span class="home-marquee-item">{{ $item }}</span>
+                <span class="home-marquee-sep">·</span>
+            @endforeach
+        </div>
+        <div class="home-marquee-track">
+            @foreach($marqueeItems as $item)
+                <span class="home-marquee-item">{{ $item }}</span>
+                <span class="home-marquee-sep">·</span>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- ======================================================== --}}
     {{-- SEÇÃO 5 — Depoimentos --}}
     {{-- ======================================================== --}}
-    <section class="home-depoimentos">
+    <section class="home-depoimentos reveal-section">
         <span class="ornamento-secao">Depoimentos</span>
         <h2 class="home-section-titulo">O que dizem sobre meu trabalho</h2>
         <div class="home-section-linha"></div>
@@ -178,7 +233,7 @@
                     'autor'  => 'Marcos Oliveira',
                 ],
             ] as $dep)
-                <div class="home-depoimento-card">
+                <div class="home-depoimento-card reveal-item" style="--reveal-delay: {{ $loop->index * 120 }}ms">
                     <div class="home-depoimento-aspas" aria-hidden="true">"</div>
                     <p class="home-depoimento-texto">{{ $dep['texto'] }}</p>
                     <footer class="home-depoimento-rodape">
@@ -193,7 +248,7 @@
     {{-- ======================================================== --}}
     {{-- SEÇÃO 6 — CTA Final --}}
     {{-- ======================================================== --}}
-    <section class="home-cta">
+    <section class="home-cta reveal-section">
         <h2 class="home-cta-titulo">Vamos registrar seu próximo momento especial?</h2>
         <p class="home-cta-subtitulo">Entre em contato e faça seu orçamento sem compromisso</p>
 
@@ -220,7 +275,7 @@
             </a>
         </div>
         <p class="home-footer-copy">© {{ date('Y') }} {{ config('site.titulo') }}</p>
-        <p class="home-footer-sub">Fotografia profissional desde {{ config('site.desde') }} <i class="bi bi-camera" aria-hidden="true"></i></p>
+        <p class="home-footer-sub">São Paulo e região <i class="bi bi-camera" aria-hidden="true"></i></p>
     </footer>
 
     {{-- ======================================================== --}}
@@ -256,6 +311,26 @@
                 }
             }
         }
+
+        // Scroll Reveal com Intersection Observer
+        (function() {
+            var items = document.querySelectorAll('.reveal-item, .reveal-section');
+            if (!items.length || !('IntersectionObserver' in window)) {
+                items.forEach(function(el) { el.classList.add('revealed'); });
+                return;
+            }
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var el = entry.target;
+                        var delay = el.style.getPropertyValue('--reveal-delay') || '0ms';
+                        setTimeout(function() { el.classList.add('revealed'); }, parseInt(delay) || 0);
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.12 });
+            items.forEach(function(el) { observer.observe(el); });
+        })();
     </script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
