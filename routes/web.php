@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
@@ -25,6 +26,10 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/clients', ClientList::class)->name('admin.clients');
     Route::get('/perfil', AlterarSenha::class)->name('admin.perfil');
     
+    // Download de fotos (admin) para backup local
+    Route::get('/jobs/{trabalho}/download-fotos', [AdminJobController::class, 'downloadFotos'])
+        ->name('admin.jobs.download-fotos');
+
     // Rota de thumbnail proxy
     Route::get('/thumbnail/{foto}', function (\App\Models\Foto $foto) {
         try {

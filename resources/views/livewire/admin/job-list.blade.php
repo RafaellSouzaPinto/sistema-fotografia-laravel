@@ -80,6 +80,9 @@
             <button wire:click="$set('filtroTipo', 'expirados')" class="filtro-tipo {{ $filtroTipo === 'expirados' ? 'active' : '' }}">
                 <i class="bi bi-clock-history"></i> Expirados
             </button>
+            <button wire:click="$set('filtroTipo', 'finalizados')" class="filtro-tipo {{ $filtroTipo === 'finalizados' ? 'active' : '' }}">
+                <i class="bi bi-check-circle"></i> Finalizados
+            </button>
         </div>
     </div>
 
@@ -90,6 +93,8 @@
             <p style="font-size: 18px; color: #8c6b7d; margin-bottom: 24px;">
                 @if($filtroTipo === 'expirados')
                     Nenhum trabalho com links expirados
+                @elseif($filtroTipo === 'finalizados')
+                    Nenhum trabalho finalizado ainda
                 @else
                     Você ainda não tem trabalhos cadastrados
                 @endif
@@ -142,7 +147,11 @@
                             <span class="badge-completo">Completo</span>
                         @endif
 
-                        @if($trabalho->status === 'publicado')
+                        @if($trabalho->status === 'finalizado')
+                            <span class="badge" style="background:#e8f5e9; color:#2e7d32; border-radius:50px; padding:4px 12px; font-size:12px; font-weight:600;">
+                                <i class="bi bi-check-circle-fill me-1"></i>Finalizado
+                            </span>
+                        @elseif($trabalho->status === 'publicado')
                             <span class="badge-publicado">Publicado</span>
                         @else
                             <span class="badge-rascunho">Rascunho</span>
@@ -192,7 +201,29 @@
                         </button>
                     </div>
 
-                    @if($todosExpirados)
+                    @if($todosExpirados && $trabalho->status === 'publicado')
+                        <div class="mt-2 p-3" style="background:#f0f4ff; border-radius:10px; border:1px solid #c7d2fe;">
+                            <p class="mb-2 small fw-semibold" style="color:#3730a3;">
+                                <i class="bi bi-archive me-1"></i> Arquivar trabalho
+                            </p>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a href="{{ route('admin.jobs.download-fotos', $trabalho) }}"
+                                   class="btn btn-sm fw-semibold"
+                                   style="background:#3b82f6; color:#fff; border-radius:8px; border:none;">
+                                    <i class="bi bi-download me-1"></i> Baixar para HD
+                                </a>
+                                <button
+                                    wire:click="finalizarTrabalho({{ $trabalho->id }})"
+                                    wire:confirm="Marcar '{{ $trabalho->titulo }}' como finalizado? Isso indica que as fotos já foram salvas localmente."
+                                    class="btn btn-sm fw-semibold"
+                                    style="background:#6b7280; color:#fff; border-radius:8px; border:none;">
+                                    <i class="bi bi-check-circle me-1"></i> Finalizar
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($trabalho->status === 'finalizado')
                         <button wire:click="liberarEspaco({{ $trabalho->id }})"
                             wire:confirm="Isso vai deletar TODAS as fotos do Google Drive deste trabalho. Tem certeza?"
                             class="btn-perigo mt-2" style="width: 100%;">

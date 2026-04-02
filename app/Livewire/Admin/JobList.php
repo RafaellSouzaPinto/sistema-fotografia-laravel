@@ -72,6 +72,20 @@ class JobList extends Component
             ->get();
     }
 
+    public function finalizarTrabalho(int $id): void
+    {
+        $trabalho = Trabalho::findOrFail($id);
+
+        if ($trabalho->status !== 'publicado') {
+            $this->dispatch('notify', tipo: 'erro', mensagem: 'Apenas trabalhos publicados podem ser finalizados.');
+            return;
+        }
+
+        $trabalho->update(['status' => 'finalizado']);
+
+        $this->dispatch('notify', tipo: 'sucesso', mensagem: "Trabalho \"{$trabalho->titulo}\" finalizado com sucesso.");
+    }
+
     public function excluir(int $id): void
     {
         $trabalho = Trabalho::findOrFail($id);
@@ -134,18 +148,25 @@ class JobList extends Component
             $query->where('titulo', 'like', "%{$this->busca}%");
         }
 
-        if ($this->filtroTipo === 'expirados') {
-            $query->whereHas('clientes', function ($q) {
-                $q->where(function ($q2) {
-                    $q2->where('trabalho_cliente.status_link', 'expirado')
-                       ->orWhere(function ($q3) {
-                           $q3->whereNotNull('trabalho_cliente.expira_em')
-                              ->where('trabalho_cliente.expira_em', '<', now());
-                       });
+        if ($this->filtroTipo === 'finalizados') {
+            $query->where('status', 'finalizado');
+        } elseif ($this->filtroTipo === 'expirados') {
+            $query->whereIn('status', ['rascunho', 'publicado'])
+                ->whereHas('clientes', function ($q) {
+                    $q->where(function ($q2) {
+                        $q2->where('trabalho_cliente.status_link', 'expirado')
+                           ->orWhere(function ($q3) {
+                               $q3->whereNotNull('trabalho_cliente.expira_em')
+                                  ->where('trabalho_cliente.expira_em', '<', now());
+                           });
+                    });
                 });
-            });
-        } elseif ($this->filtroTipo !== 'todos') {
-            $query->where('tipo', $this->filtroTipo);
+        } elseif ($this->filtroTipo === 'todos') {
+            $query->whereIn('status', ['rascunho', 'publicado']);
+        } else {
+            // previa ou completo — exclui finalizados
+            $query->where('tipo', $this->filtroTipo)
+                  ->whereIn('status', ['rascunho', 'publicado']);
         }
 
         $trabalhos = $query->orderBy('created_at', 'desc')->get();

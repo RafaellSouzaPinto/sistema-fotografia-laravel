@@ -47,6 +47,21 @@ class Trabalho extends Model
             ->exists();
     }
 
+    public function estaFinalizado(): bool
+    {
+        return $this->status === 'finalizado';
+    }
+
+    public function scopeFinalizado($query)
+    {
+        return $query->where('status', 'finalizado');
+    }
+
+    public function scopeAtivo($query)
+    {
+        return $query->whereIn('status', ['rascunho', 'publicado']);
+    }
+
     public function fotos()
     {
         return $this->hasMany(Foto::class, 'trabalho_id');
