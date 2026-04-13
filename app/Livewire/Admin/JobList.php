@@ -139,7 +139,7 @@ class JobList extends Component
         $query = Trabalho::withCount(['fotos', 'clientes'])
             ->with([
                 'clientes' => function ($q) {
-                    $q->withPivot('status_link', 'expira_em');
+                    $q->withPivot('status_link', 'expira_em', 'visualizado_em', 'token');
                 },
                 'fotos' => fn($q) => $q->orderBy('ordem')->limit(1),
             ]);
