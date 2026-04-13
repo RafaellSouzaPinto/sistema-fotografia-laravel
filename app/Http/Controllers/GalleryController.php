@@ -31,6 +31,12 @@ class GalleryController extends Controller
             return view('gallery.expirado', $dadosContato);
         }
 
+        // Registrar visualização
+        $pivot->increment('total_visualizacoes');
+        if ($pivot->visualizado_em === null) {
+            $pivot->update(['visualizado_em' => now()]);
+        }
+
         $trabalho = $pivot->trabalho;
         $cliente = $pivot->cliente;
         $fotos = $trabalho->fotos()->orderBy('ordem')->get();
