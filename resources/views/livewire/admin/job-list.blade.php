@@ -167,13 +167,31 @@
                     <hr style="border-color: #f0d4da; margin: 12px 0;">
 
                     <!-- Contadores -->
-                    <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                    @php
+                        $clientesVisualizaram = $trabalho->clientes->filter(fn($c) => !is_null($c->pivot->visualizado_em))->count();
+                    @endphp
+                    <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
                         <span style="font-size: 14px; color: #8c6b7d;">
                             <i class="bi bi-image"></i> {{ $trabalho->fotos_count }} fotos
                         </span>
                         <span style="font-size: 14px; color: #8c6b7d;">
                             <i class="bi bi-people"></i> {{ $trabalho->clientes_count }} clientes
                         </span>
+                        @if($trabalho->clientes_count > 0 && $trabalho->status === 'publicado')
+                            @if($clientesVisualizaram === $trabalho->clientes_count)
+                                <span style="font-size: 14px; color: #2e7d32;" title="Todos os clientes visualizaram as fotos">
+                                    <i class="bi bi-eye-fill"></i> Todos viram
+                                </span>
+                            @elseif($clientesVisualizaram > 0)
+                                <span style="font-size: 14px; color: #e67e22;" title="{{ $clientesVisualizaram }} de {{ $trabalho->clientes_count }} clientes abriram o link">
+                                    <i class="bi bi-eye"></i> {{ $clientesVisualizaram }}/{{ $trabalho->clientes_count }} viram
+                                </span>
+                            @else
+                                <span style="font-size: 14px; color: #9e9e9e;" title="Nenhum cliente abriu o link ainda">
+                                    <i class="bi bi-eye-slash"></i> Ninguém abriu
+                                </span>
+                            @endif
+                        @endif
                     </div>
 
                     <!-- Ações -->
@@ -265,6 +283,19 @@
                                 <span class="badge" style="background: #fdecea; color: #c0392b; font-size: 12px; padding: 4px 10px;">
                                     <i class="bi bi-clock-history me-1"></i>Expirado
                                 </span>
+                            </div>
+                            {{-- Lembrete: reenviar via WhatsApp após renovar --}}
+                            @php
+                                $telefoneWa = '55' . preg_replace('/\D/', '', $vinculo->cliente->telefone);
+                                $mensagemWa = "Olá, {$vinculo->cliente->nome}! Seu acesso às fotos foi renovado. Acesse aqui: " . url('/galeria/' . $vinculo->token);
+                            @endphp
+                            <div class="pb-1">
+                                <a href="https://wa.me/{{ $telefoneWa }}?text={{ urlencode($mensagemWa) }}"
+                                   target="_blank" rel="noopener"
+                                   class="btn btn-sm"
+                                   style="background:#25d366; color:#fff; border-radius:6px; font-size:12px;">
+                                    <i class="bi bi-whatsapp me-1"></i>Reenviar link após renovar
+                                </a>
                             </div>
                             @endforeach
                         </div>
