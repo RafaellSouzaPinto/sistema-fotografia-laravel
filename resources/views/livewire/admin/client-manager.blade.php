@@ -83,6 +83,20 @@
                             @else
                                 <span class="badge bg-secondary mt-1" style="font-size: 12px;">Sem prazo</span>
                             @endif
+
+                            {{-- Badge de visualização --}}
+                            @if($vinculo->foiVisualizado())
+                                <span class="badge mt-1" style="background:#e8f5e9; color:#2e7d32; font-size: 12px;" title="{{ $vinculo->total_visualizacoes }} visualização(ões)">
+                                    <i class="bi bi-eye-fill me-1"></i>Visto em {{ $vinculo->visualizado_em->format('d/m') }}
+                                    @if($vinculo->total_visualizacoes > 1)
+                                        · {{ $vinculo->total_visualizacoes }}x
+                                    @endif
+                                </span>
+                            @else
+                                <span class="badge mt-1" style="background:#f3f4f6; color:#6b7280; font-size: 12px;">
+                                    <i class="bi bi-eye-slash me-1"></i>Não aberto
+                                </span>
+                            @endif
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                             {{-- Copiar link --}}
@@ -95,6 +109,19 @@
                                     <i class="bi bi-clipboard"></i>
                                     <span x-text="copiado ? '✓ Copiado!' : 'Copiar link'"></span>
                                 </button>
+                                {{-- Enviar por WhatsApp --}}
+                                @php
+                                    $telefoneWa = '55' . preg_replace('/\D/', '', $vinculo->cliente->telefone);
+                                    $mensagemWa = "Olá, {$vinculo->cliente->nome}! Suas fotos estão prontas. Acesse sua galeria aqui: " . url('/galeria/' . $vinculo->token);
+                                @endphp
+                                <a href="https://wa.me/{{ $telefoneWa }}?text={{ urlencode($mensagemWa) }}"
+                                   target="_blank"
+                                   rel="noopener"
+                                   class="btn-outline-rosa"
+                                   style="color: #25d366; border-color: #25d366;"
+                                   title="Enviar link por WhatsApp">
+                                    <i class="bi bi-whatsapp"></i> WhatsApp
+                                </a>
                             @endif
                             {{-- Renovar (só expirados) --}}
                             @if($vinculo->estaExpirado())
