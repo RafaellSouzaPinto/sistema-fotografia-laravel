@@ -11,11 +11,17 @@ class TrabalhoCliente extends Model
 
     protected $table = 'trabalho_cliente';
 
-    protected $fillable = ['trabalho_id', 'cliente_id', 'token', 'expira_em', 'status_link'];
+    protected $fillable = ['trabalho_id', 'cliente_id', 'token', 'expira_em', 'status_link', 'visualizado_em', 'total_visualizacoes'];
 
     protected $casts = [
-        'expira_em' => 'datetime',
+        'expira_em'    => 'datetime',
+        'visualizado_em' => 'datetime',
     ];
+
+    public function foiVisualizado(): bool
+    {
+        return $this->visualizado_em !== null;
+    }
 
     public function estaExpirado(): bool
     {
