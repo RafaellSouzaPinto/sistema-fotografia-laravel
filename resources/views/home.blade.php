@@ -34,14 +34,7 @@
             {{-- Coluna esquerda: foto --}}
             <div class="home-hero-foto-col">
                 <div class="home-hero-foto-moldura">
-                    @if(file_exists(public_path('img/silvia-foto.jpg')))
-                        <img src="{{ asset('img/silvia-foto.jpg') }}" alt="Silvia Souza Fotógrafa" class="home-hero-foto">
-                    @else
-                        <div class="home-hero-foto-placeholder">
-                            <i class="bi bi-camera"></i>
-                            <small>Foto da Silvia</small>
-                        </div>
-                    @endif
+                    <img src="{{ asset('img/foto-perfil-silvia.jpeg') }}" alt="Silvia Souza Fotógrafa" class="home-hero-foto">
                 </div>
             </div>
 
@@ -111,12 +104,10 @@
 
         <div class="home-servicos-grid">
             @foreach([
-                ['icone' => 'bi-balloon-heart',  'titulo' => 'Festas Infantis',       'desc' => 'Aniversários, batizados e comemorações. Cada sorriso registrado com carinho.'],
-                ['icone' => 'bi-mortarboard',    'titulo' => 'Formaturas e Escolas',  'desc' => 'Colações de grau, eventos escolares e fotos de turma.'],
-                ['icone' => 'bi-heart',          'titulo' => 'Casamentos',            'desc' => 'Do making of à festa. Todos os momentos eternizados.'],
-                ['icone' => 'bi-people',         'titulo' => 'Ensaios de Família',    'desc' => 'Sessões em estúdio ou ao ar livre. Memórias que duram para sempre.'],
-                ['icone' => 'bi-stars',          'titulo' => 'Festas e Eventos',      'desc' => 'Confraternizações, aniversários de adultos, eventos corporativos.'],
-                ['icone' => 'bi-camera',         'titulo' => 'Ensaios Fotográficos',  'desc' => 'Gestantes, newborn, debutantes, books profissionais.'],
+                ['icone' => 'bi-people',         'titulo' => 'Fotógrafa de Família',  'desc' => 'Ensaios e registros em família. Momentos que duram para sempre.'],
+                ['icone' => 'bi-balloon-heart',  'titulo' => 'Festa Infantil',        'desc' => 'Aniversários, batizados e comemorações cheias de alegria.'],
+                ['icone' => 'bi-camera',         'titulo' => 'Ensaios',               'desc' => 'Gestantes, casais e books. Cada ensaio é único.'],
+                ['icone' => 'bi-mortarboard',    'titulo' => 'Fotos Escolares',       'desc' => 'Registros escolares com carinho e profissionalismo.'],
             ] as $servico)
                 <div class="home-servico-card reveal-item" style="--reveal-delay: {{ $loop->index * 80 }}ms">
                     <div class="home-servico-card-header">
@@ -136,11 +127,24 @@
     {{-- SEÇÃO 4 — Meu Trabalho (galeria / portfolio) --}}
     {{-- ======================================================== --}}
     @php
-        $portfolioIds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
-        $portfolioFotos = array_map(fn($id) => "https://picsum.photos/id/{$id}/600/600", $portfolioIds);
+        $portfolioFotos = [
+            ['src' => 'img/portfolio/portfolio-01.jpg', 'cat' => 'Ensaio',          'alt' => 'Ensaio gestante — mãe e filha no banco do parque'],
+            ['src' => 'img/portfolio/portfolio-02.jpg', 'cat' => 'Festa Infantil',  'alt' => 'Aniversário de 2 anos da Alice — decoração Encanto'],
+            ['src' => 'img/portfolio/portfolio-03.jpg', 'cat' => 'Ensaio',          'alt' => 'Ensaio gestante — casal em preto e branco'],
+            ['src' => 'img/portfolio/portfolio-04.jpg', 'cat' => 'Família',         'alt' => 'Família reunida — Noah com os pais'],
+            ['src' => 'img/portfolio/portfolio-05.jpg', 'cat' => 'Fotos Escolares', 'alt' => 'Giovanna — retrato escolar'],
+            ['src' => 'img/portfolio/portfolio-06.jpg', 'cat' => 'Festa Infantil',  'alt' => 'Aniversário de 7 anos — Romeu com Homem-Aranha'],
+            ['src' => 'img/portfolio/portfolio-07.jpg', 'cat' => 'Festa Infantil',  'alt' => 'Brincando com bolhas de sabão'],
+            ['src' => 'img/portfolio/portfolio-08.jpg', 'cat' => 'Ensaio',          'alt' => 'Ensaio gestante — família caminhando no parque'],
+            ['src' => 'img/portfolio/portfolio-09.jpg', 'cat' => 'Família',         'alt' => 'Momento em família — bebê Noah com os pais'],
+            ['src' => 'img/portfolio/portfolio-10.jpg', 'cat' => 'Fotos Escolares',  'alt' => 'Giovanna — abraço entre amigas'],
+            ['src' => 'img/portfolio/portfolio-11.jpg', 'cat' => 'Ensaio',          'alt' => 'Ensaio gestante — Adriana na cama'],
+            ['src' => 'img/portfolio/portfolio-12.jpg', 'cat' => 'Festa Infantil',  'alt' => 'Aniversário da Alice — crianças se divertindo'],
+        ];
+        $fotosUrls = array_map(fn($f) => asset($f['src']), $portfolioFotos);
     @endphp
 
-    <section class="home-portfolio" x-data="portfolioGaleria({{ json_encode($portfolioFotos) }})">
+    <section class="home-portfolio" x-data="portfolioGaleria({{ json_encode($fotosUrls) }})">
         <span class="ornamento-secao">Portfólio</span>
         <h2 class="home-section-titulo">Meu Trabalho</h2>
         <div class="home-section-linha"></div>
@@ -171,16 +175,13 @@
         </div>
 
         {{-- Grid de fotos --}}
-        @php
-            $categorias = ['Casamento','Formatura','Festa Infantil','Ensaio','Família','Evento','Casamento','Debutante','Newborn','Ensaio','Família','Festa'];
-        @endphp
         <div class="home-portfolio-grid">
             @foreach($portfolioFotos as $i => $foto)
                 <div class="home-portfolio-item home-portfolio-item-{{ $i + 1 }}"
-                     data-categoria="{{ $categorias[$i] }}"
+                     data-categoria="{{ $foto['cat'] }}"
                      @click="abrir({{ $i }})">
-                    <img src="{{ $foto }}"
-                         alt="Foto do portfolio {{ $i + 1 }}"
+                    <img src="{{ asset($foto['src']) }}"
+                         alt="{{ $foto['alt'] }}"
                          class="home-portfolio-img"
                          loading="lazy">
                 </div>
@@ -192,8 +193,8 @@
     {{-- SEÇÃO 4.5 — Marquee editorial --}}
     {{-- ======================================================== --}}
     @php
-        $marqueeBase = ['Festas Infantis', 'Casamentos', 'Formaturas', 'Ensaios Fotográficos', 'Ensaios de Família', 'Eventos', 'Debutantes', 'Newborn'];
-        $marqueeItems = array_merge($marqueeBase, $marqueeBase, $marqueeBase, $marqueeBase);
+        $marqueeBase = ['Fotógrafa de Família', 'Festa Infantil', 'Ensaios', 'Fotos Escolares'];
+        $marqueeItems = array_merge($marqueeBase, $marqueeBase, $marqueeBase, $marqueeBase, $marqueeBase, $marqueeBase);
     @endphp
     <div class="home-marquee-strip" aria-hidden="true">
         <div class="home-marquee-track">
