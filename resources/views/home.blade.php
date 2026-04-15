@@ -84,7 +84,7 @@
             </div>
             <div class="home-stat-divisor" aria-hidden="true"></div>
             <div class="home-stat-item">
-                <span class="home-stat-numero">500<span class="home-stat-plus">+</span></span>
+                <span class="home-stat-numero">4000<span class="home-stat-plus">+</span></span>
                 <span class="home-stat-label">eventos fotografados</span>
             </div>
             <div class="home-stat-divisor" aria-hidden="true"></div>
