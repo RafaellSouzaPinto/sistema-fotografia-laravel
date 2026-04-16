@@ -106,7 +106,7 @@
             @foreach([
                 ['icone' => 'bi-people',         'titulo' => 'Fotógrafa de Família',  'desc' => 'Ensaios e registros em família. Momentos que duram para sempre.'],
                 ['icone' => 'bi-balloon-heart',  'titulo' => 'Festa Infantil',        'desc' => 'Aniversários, batizados e comemorações cheias de alegria.'],
-                ['icone' => 'bi-camera',         'titulo' => 'Ensaios',               'desc' => 'Gestantes, casais e books. Cada ensaio é único.'],
+                ['icone' => 'bi-camera',         'titulo' => 'Ensaios',               'desc' => 'Gestantes, casais e famílias. Cada ensaio é único.'],
                 ['icone' => 'bi-mortarboard',    'titulo' => 'Fotos Escolares',       'desc' => 'Registros escolares com carinho e profissionalismo.'],
             ] as $servico)
                 <div class="home-servico-card reveal-item" style="--reveal-delay: {{ $loop->index * 80 }}ms">
