@@ -7,6 +7,8 @@
 ![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9)
 ![MariaDB](https://img.shields.io/badge/MariaDB-10.11-003545?logo=mariadb&logoColor=white)
 ![Google Drive](https://img.shields.io/badge/Google%20Drive-API-4285F4?logo=googledrive&logoColor=white)
+[![Produção](https://img.shields.io/badge/Produção-silviasouzafotografa.com.br-c27a8e?logo=google-chrome&logoColor=white)](https://silviasouzafotografa.com.br/)
+[![Homologação](https://img.shields.io/badge/Homologação-homolog.silviasouzafotografa.com.br-6c757d?logo=google-chrome&logoColor=white)](https://homolog.silviasouzafotografa.com.br/)
 
 ---
 
@@ -263,6 +265,15 @@ php8.3 -c php.ini artisan serve --host=127.0.0.1 --port=9000
 
 ## Acesso
 
+### Produção
+- URL: [https://silviasouzafotografa.com.br](https://silviasouzafotografa.com.br/)
+- Email: `silviasouzafotografa@gmail.com`
+
+### Homologação
+- URL: [https://homolog.silviasouzafotografa.com.br](https://homolog.silviasouzafotografa.com.br/)
+- Email: `silviasouzafotografa@gmail.com`
+
+### Local
 - URL: `http://127.0.0.1:9000`
 - Email: `silviasouzafotografa@gmail.com`
 - Senha: `123456`
