@@ -24,7 +24,7 @@
     <!-- Saudação -->
     <div class="galeria-saudacao">
         <h1>Olá, {{ $cliente->nome }}! 👋</h1>
-        <p class="subtitulo">Aqui estão as fotos do seu trabalho:</p>
+        <p class="subtitulo">Suas fotos estão prontas!</p>
         <p class="titulo-trabalho">{{ $trabalho->titulo }}</p>
         <p class="data-trabalho">
             <i class="bi bi-calendar3"></i>
